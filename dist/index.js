@@ -115,7 +115,8 @@ var YouTubePlugin = class extends import_distube.ExtractorPlugin {
   }
   async getStreamURL(song) {
     if (!song.url || !import_ytdl_core.default.validateURL(song.url)) throw new import_distube.DisTubeError("CANNOT_RESOLVE_SONG", song);
-    const info = await import_ytdl_core.default.getInfo(song.url, this.ytdlOptions);
+    let info = await import_ytdl_core.default.getInfo(song.url, this.ytdlOptions);
+    info.formats = info.formats.filter((f) => f.hasAudio); /* 403 Error Workaround */
     if (!info.formats?.length) throw new import_distube.DisTubeError("UNAVAILABLE_VIDEO");
     const newSong = new YouTubeSong(this, info, {});
     song.ageRestricted = newSong.ageRestricted;
